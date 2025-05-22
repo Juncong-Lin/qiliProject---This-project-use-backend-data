@@ -1,10 +1,18 @@
 import {cart, addToCart} from '../data/cart.js'; 
-import {products,loadProducts} from '../data/products.js';
+import {products,
+// vvv => This is the backend data version of the products array.
+  loadProducts
+// ^^^ => This is the backend data version of the products array.
+} from '../data/products.js';
 import { formatCurrency } from './utils/money.js';
 
+// vvv => This is the backend data version of the products array.
 loadProducts(renderProductsGrid);
+// ^^^ => This is the backend data version of the products array.
 
+// vvv => This is the local data version of the products array.
 function renderProductsGrid() {
+// ^^^ => This is the local data version of the products array.
   let productsHTML = '';
   products.forEach((product) => {
     productsHTML += `

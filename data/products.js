@@ -59,6 +59,7 @@ console.log(date)
 console.log(date.toLocaleDateString())
 */
 
+// vvv => This is the backend data version of the products array.
 export let products = [];
 export function loadProducts(fun) {
   const xhr = new XMLHttpRequest();
@@ -78,6 +79,7 @@ export function loadProducts(fun) {
   xhr.send();
 }
 loadProducts();
+// ^^^ => This is the backend data version of the products array.
   
 /* This is the local data version of the products array.
   export const products = [
