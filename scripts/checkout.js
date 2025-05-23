@@ -7,12 +7,17 @@ import {loadCart} from '../data/cart.js';
 
 // 1、 await is used in async, and async is more cleaner than Promise.
 async function loadPage() {
-  await loadProductsFetch(),
-  await new Promise((resolve) => {
-    loadCart(() => {
-      resolve();
-    });
-  })
+  try {
+    await loadProductsFetch(),
+    await new Promise((resolve) => {
+      loadCart(() => {
+        resolve();
+      });
+    });  
+  } catch (error) {
+    console.log('Unexpect error , please try again later')
+  }
+
   renderOrderSummary();
   renderPaymentSummary();
 }

@@ -58,6 +58,7 @@ const date = new Date();
 console.log(date)
 console.log(date.toLocaleDateString())
 */
+// 2、Use fetch is more clearer than use XHM method
 export function loadProductsFetch() {
   const promise = fetch(
     'https://supersimplebackend.dev/products'
@@ -70,14 +71,13 @@ export function loadProductsFetch() {
       } 
       return new Product(productDetails);
     });
-  }); 
+  }).catch(() => {
+    console.log('Unexpect error , please try again later')
+  })
   return promise;
 } 
-/*  
-loadProductsFetch();
-*/
 
-// vvv => This is the backend data version of the products array.
+// vvv =>1、 This is the backend data version of the products array.
 export let products = [];
 export function loadProducts(fun) {
   const xhr = new XMLHttpRequest();
@@ -91,6 +91,9 @@ export function loadProducts(fun) {
     });
     fun();
   }); 
+  xhr.addEventListener('error', () => {
+    console.log('Unexpect error , please try again later')
+  })
 
   xhr.open("GET", "https://supersimplebackend.dev/products");
   xhr.send();
