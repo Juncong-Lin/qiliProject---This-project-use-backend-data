@@ -89,7 +89,7 @@ export function loadProducts(fun) {
       } 
       return new Product(productDetails);
     });
-    fun();
+    if (typeof fun === 'function') fun();
   }); 
   xhr.addEventListener('error', () => {
     console.log('Unexpect error , please try again later')

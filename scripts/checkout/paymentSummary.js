@@ -3,6 +3,8 @@ import {formatCurrency} from '../utils/money.js';
 import {getProduct,products} from '../../data/products.js'; 
 import {removeFromCart, updateDeliveryOption} from '../../data/cart.js';
 import {deliveryOptions, getDeliveryOption} from '../../data/deleveryOptions.js';
+import { addOrders } from '../../data/orders.js';
+
 
 
 export function renderPaymentSummary() {
@@ -51,12 +53,61 @@ export function renderPaymentSummary() {
       <div class="payment-summary-money">$${formatCurrency(total)}</div>
     </div>
 
-    <button class="place-order-button button-primary">
+    <button class="place-order-button button-primary js-place-order">
       Place your order
     </button>
   `;
   document.querySelector('.js-payment-summary').innerHTML = paymentSummaryHTML;
+
+  document.querySelector('.js-place-order')
+  .addEventListener('click', async () => {
+    try {
+      // Calculate order details
+      let productPriceCents = 0;
+      let shippingPriceCents = 0;
+      cart.forEach((cartItem) => {
+        const product = getProduct(cartItem.productId);
+        productPriceCents += product.priceCents * cartItem.quantity;
+        const deliveryOptions = getDeliveryOption(cartItem.deliveryOptionId);
+        shippingPriceCents += deliveryOptions.priceCents;
+      });
+      const totalBeforeTax = productPriceCents + shippingPriceCents;
+      const tax = totalBeforeTax * 0.1;
+      const total = totalBeforeTax + tax;
+
+      // Place order to backend (optional, keep as is)
+      const response = await fetch('https://supersimplebackend.dev/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          cart: cart
+        })  
+      });
+      await response.json(); // ignore backend response, use local order object
+
+      // Build order object
+      const order = {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+        date: new Date().toLocaleDateString(),
+        total: (total / 100).toFixed(2),
+        items: cart.map(item => ({
+          ...item,
+          product: getProduct(item.productId)
+        }))
+      };
+      addOrders(order);
+      // Clear cart
+      localStorage.setItem('cart', JSON.stringify([]));
+    } catch (error) {
+      console.log('Unexpected error.Try again later.')
+    }
+    window.location.href = 'orders.html';
+  });
 }
+
+    
 
 export function renderOrderSummary() {
   let paymentSummaryHTML = `
